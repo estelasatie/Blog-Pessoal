@@ -1,4 +1,4 @@
-﻿package com.generation.blogpessoal.controller;
+package com.generation.blogpessoal.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -35,63 +35,57 @@ public class UsuarioControllerTest {
 	private UsuarioRepository usuarioRepository;
 
 	@BeforeAll
-	void start(){
+	void start() {
 
 		usuarioRepository.deleteAll();
-
-		usuarioService.cadastrarUsuario(new Usuario(0L, 
-			"Root", "root@root.com", "rootroot", "-"));
-
+		usuarioService.cadastrarUsuario(new Usuario(0L, "Root", "root@root.com", "rootroot", ""));
 	}
 
 	@Test
-	@DisplayName("Cadastrar Um Usuário")
+	@DisplayName("cadastrar um usuario")
 	public void deveCriarUmUsuario() {
 
-		HttpEntity<Usuario> corpoRequisicao = new HttpEntity<Usuario>(new Usuario(0L, 
-			"Paulo Antunes", "paulo_antunes@email.com.br", "13465278", "-"));
+		HttpEntity<Usuario> corpoRequisicao = new HttpEntity<Usuario>(
+				new Usuario(0l, "paulo antunes", "paulo@email.com", "1234567", "-"));
 
-		ResponseEntity<Usuario> corpoResposta = testRestTemplate
-			.exchange("/usuarios/cadastrar", HttpMethod.POST, corpoRequisicao, Usuario.class);
+		ResponseEntity<Usuario> corpoResposta = testRestTemplate.exchange("/usuario/cadastrar", HttpMethod.POST,
+				corpoRequisicao, Usuario.class);
 
 		assertEquals(HttpStatus.CREATED, corpoResposta.getStatusCode());
-	
 	}
 
 	@Test
-	@DisplayName("Não deve permitir duplicação do Usuário")
-	public void naoDeveDuplicarUsuario() {
+	@DisplayName("não deve permitir duplicação do usuário")
+	public void naoDevePermitirDuplicacaoDoUsuario() {
 
-		usuarioService.cadastrarUsuario(new Usuario(0L, 
-			"Maria da Silva", "maria_silva@email.com.br", "13465278", "-"));
+		usuarioService.cadastrarUsuario(new Usuario(0l, "Maria da Silva", "maria_silva@email.com", "12345678", "-"));
 
-		HttpEntity<Usuario> corpoRequisicao = new HttpEntity<Usuario>(new Usuario(0L, 
-			"Maria da Silva", "maria_silva@email.com.br", "13465278", "-"));
+		HttpEntity<Usuario> corpoRequisicao = new HttpEntity<Usuario>(
+				new Usuario(0l, "Maria da Silva", "maria_silva@email.com", "12345678", "-"));
 
-		ResponseEntity<Usuario> corpoResposta = testRestTemplate
-			.exchange("/usuarios/cadastrar", HttpMethod.POST, corpoRequisicao, Usuario.class);
+		ResponseEntity<Usuario> corpoResposta = testRestTemplate.exchange("/usuario/cadastrar", HttpMethod.POST,
+				corpoRequisicao, Usuario.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, corpoResposta.getStatusCode());
+
 	}
 
 	@Test
-	@DisplayName("Atualizar um Usuário")
+	@DisplayName("Atualizar um usuário")
 	public void deveAtualizarUmUsuario() {
 
-		Optional<Usuario> usuarioCadastrado = usuarioService.cadastrarUsuario(new Usuario(0L, 
-			"Juliana Andrews", "juliana_andrews@email.com.br", "juliana123", "-"));
+		Optional<Usuario> usuarioCadastrado = usuarioService
+				.cadastrarUsuario(new Usuario(0l, "Juliana Andrews", "juliana_andrews@email.com", "juliana123", "-"));
 
-		Usuario usuarioUpdate = new Usuario(usuarioCadastrado.get().getId(), 
-			"Juliana Andrews Ramos", "juliana_ramos@email.com.br", "juliana123" , "-");
-		
+		Usuario usuarioUpdate = new Usuario(usuarioCadastrado.get().getId(), "juliana andrews ramos",
+				"juliana_ramos@email.com", "juliana123", "-");
+
 		HttpEntity<Usuario> corpoRequisicao = new HttpEntity<Usuario>(usuarioUpdate);
 
-		ResponseEntity<Usuario> corpoResposta = testRestTemplate
-			.withBasicAuth("root@root.com", "rootroot")
-			.exchange("/usuarios/atualizar", HttpMethod.PUT, corpoRequisicao, Usuario.class);
+		ResponseEntity<Usuario> corpoResposta = testRestTemplate.withBasicAuth("root@root.com", "rootroot")
+				.exchange("/usuario/atualizar,", HttpMethod.PUT, corpoRequisicao, Usuario.class);
 
 		assertEquals(HttpStatus.OK, corpoResposta.getStatusCode());
-		
 	}
 
 	@Test
@@ -111,5 +105,4 @@ public class UsuarioControllerTest {
 		assertEquals(HttpStatus.OK, resposta.getStatusCode());
 
 	}
-
 }
